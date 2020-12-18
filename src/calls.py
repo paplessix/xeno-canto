@@ -5,12 +5,16 @@ import librosa
 def signal_to_calls(signal, calls =True):
     """Retourne une liste de calls à partir du signal mis en entrée"""
 
+    intensity = signal*signal
+    puissance_moy = np.sum(intensity)*10000/len(intensity)
+
     kernel_size = 1000
     h = np.ones(2*kernel_size+1)/(kernel_size*2+1)
     mean = np.convolve(signal, h, mode='same')
     var = np.convolve( np.square(signal - mean),h, mode='same')
+    var = var/puissance_moy
 
-    var_seuil = np.array(var> 0.0002)
+    var_seuil = np.array(var> np.mean(var))
 
     kernel_size2 = 10000
     h2 = np.ones(2*kernel_size2+1)/(kernel_size2*2+1)
@@ -28,6 +32,9 @@ def signal_to_calls(signal, calls =True):
             a = b
         b+=1
     indices_intervalles.append((sounds[a] + 5000,sounds[b-1] - 5000))
+
+    if len(indices_intervalles) > 10:
+        return Null
 
     if calls :
         calls = [signal[a:b+1] for (a,b) in indices_intervalles]
