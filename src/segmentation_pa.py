@@ -34,13 +34,20 @@ def get_optimal_sampling_size(pulse, mode ='mean'):
 
 def save_call(call,sr, species_name,call_number, path ):
     np.savetxt(path + f'call_{sr}_{species_name}_{call_number}.csv', call, delimiter=",")
-    print('SAVED : ',path +'call/'+ f'call_{sr}_{species_name}_{call_number}.csv' )
-def sample_pulse(y , sr , pulse, species_name , call_number ):
-    size = get_optimal_sampling_size(pulse)
+    print('SAVED : ',path + f'call_{sr}_{species_name}_{call_number}.csv' )
+
+
+def sample_pulse(y , sr , pulse, species_name , call_number, path  ):
+    size = 5000
     for i in range (len(pulse)):
         index = pulse[i]
-        sampled_pulse = y[index:index+size]
-        sf.write(TARGETFILE+'pulse/'+f'pulse_{species_name}_{call_number}_{i}.mp3', sampled_pulse, sr)
+        if index+size < len(y):
+            sampled_pulse = y[index:index+size]
+            print(len(sampled_pulse))
+            np.savetxt(path+f'pulse_{species_name}_{call_number}_{i}.csv', sampled_pulse, delimiter=",")
+            print('SAVED :', path+f'pulse_{species_name}_{call_number}_{i}.csv')
+        else :
+            pass
 
 def sample_signal(y, sr, species_name, path ):
     call_indexes = signal_to_calls(y, calls = False)
@@ -48,6 +55,9 @@ def sample_signal(y, sr, species_name, path ):
         indexes = call_indexes[i]
         call = y[indexes[0]:indexes[1]]
         save_call(call, sr, species_name,i+1, path)
+        pulse = get_pulse(call, sr)
+
+        sample_pulse(call, sr, pulse, species_name, i+1,path)
 def main():
     ROOT_MP3 = '../mp3/'
     DATAFILE = '../data/'
@@ -56,12 +66,14 @@ def main():
     for FILENAME in files:
         y, sr = lib.load(Path(ROOT_MP3 + FILENAME))
         species_name = FILENAME[:-11]
+        species_key = FILENAME [:-4]
         if not species_name in known_species:
             os.mkdir('../data/'+species_name)
+            known_species.add(species_name)
         print(species_name)
 
         TARGETFILE = DATAFILE+ species_name+'/'
-        sample_signal(y,sr, species_name, TARGETFILE)
+        sample_signal(y, sr, species_key, TARGETFILE)
 
 
 
