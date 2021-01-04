@@ -11,7 +11,7 @@ def signal_to_calls(signal, calls =True):
     kernel_size = 1000
     h = np.ones(2*kernel_size+1)/(kernel_size*2+1)
     mean = np.convolve(signal, h, mode='same')
-    var = np.convolve( np.square(signal - mean),h, mode='same')
+    var = np.convolve(np.square(signal - mean),h, mode='same')
     var = var/puissance_moy
 
     var_seuil = np.array(var> np.mean(var))
@@ -34,7 +34,7 @@ def signal_to_calls(signal, calls =True):
     indices_intervalles.append((sounds[a] + 5000,sounds[b-1] - 5000))
 
     if len(indices_intervalles) > 10:
-        return Null
+        return None
 
     if calls :
         calls = [signal[a:b+1] for (a,b) in indices_intervalles]

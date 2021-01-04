@@ -51,22 +51,27 @@ def sample_pulse(y , sr , pulse, species_name , call_number, path  ):
 
 def sample_signal(y, sr, species_name, path ):
     call_indexes = signal_to_calls(y, calls = False)
-    for i in range(len(call_indexes)):
-        indexes = call_indexes[i]
-        call = y[indexes[0]:indexes[1]]
-        save_call(call, sr, species_name,i+1, path)
-        pulse = get_pulse(call, sr)
+    if call_indexes == None :
+        print('Too much call detected, unusable file')
+    else :
+        for i in range(len(call_indexes)):
+            indexes = call_indexes[i]
+            call = y[indexes[0]:indexes[1]]
+            save_call(call, sr, species_name,i+1, path)
+            pulse = get_pulse(call, sr)
 
-        sample_pulse(call, sr, pulse, species_name, i+1,path)
+            sample_pulse(call, sr, pulse, species_name, i+1,path)
 def main():
     ROOT_MP3 = '../mp3/'
     DATAFILE = '../data/'
     files = os.listdir(ROOT_MP3)
     known_species = set(os.listdir(DATAFILE ))
-    for FILENAME in files:
+    for FILENAME in files[:100]:
         y, sr = lib.load(Path(ROOT_MP3 + FILENAME))
-        species_name = FILENAME[:-11]
-        species_key = FILENAME [:-4]
+        parser = FILENAME.split('-')
+        species_name = parser[0]+'-'+parser[1]
+        # TODO : S'assurer que y'a aps de galère si le nom d'espèce est fait que de une partie
+        species_key = parser[0]+'-'+parser[1] + '-' +parser[2][:-4]
         if not species_name in known_species:
             os.mkdir('../data/'+species_name)
             known_species.add(species_name)
