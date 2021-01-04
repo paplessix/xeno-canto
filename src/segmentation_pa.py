@@ -37,7 +37,7 @@ def save_call(call,sr, species_name,call_number, path ):
     print('SAVED : ',path + f'call_{sr}_{species_name}_{call_number}.csv' )
 
 
-def sample_pulse(y , sr , pulse, species_name , call_number, path  ):
+def sample_pulse(y , sr , pulse, species_name , call_number, path ):
     size = 5000
     for i in range (len(pulse)):
         index = pulse[i]
@@ -77,7 +77,7 @@ def main():
             known_species.add(species_name)
         print(species_name)
 
-        TARGETFILE = DATAFILE+ species_name+'/'
+        TARGETFILE = DATAFILE + species_name+'/'
         sample_signal(y, sr, species_key, TARGETFILE)
 
 
