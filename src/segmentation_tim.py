@@ -51,7 +51,7 @@ def signal_to_calls(signal, calls =True):
 
 a = signal_to_calls(signal)
 
-plt.plot(a[3])
+plt.plot(a[0])
 plt.show()
 
 
