@@ -17,9 +17,11 @@ def preprocessing(signal, f_ech):
     f_sub = 22000
     if len(signal.shape) == 2:
         signal = signal[:, 0]
+        
+    N = len(signal)
     delta_ts = 1 / f_ech
     delta_tr = 1 / f_sub
-    ts = ts = np.linspace(0, N*delta_ts, N, endpoint=False)
+    ts = np.linspace(0, N*delta_ts, N, endpoint=False)
     tr = np.arange(0, max(ts), delta_tr)
 
     # ### Filtrage passe-bas et sous-échantillonnage
