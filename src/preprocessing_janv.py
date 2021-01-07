@@ -27,7 +27,7 @@ def preprocessing(signal, f_ech):
     # ### Filtrage passe-bas et sous-échantillonnage
     r = f_ech / f_sub
     n = 50
-    t = np.array([k for k in range(-n, n + 1)])
+    t = np.arange(-n, n+1)
     sinc = np.sinc(t / r)  # sinus cardinal
 
     h = sinc * np.hanning(2 * n + 1)  # Apodisation
@@ -50,9 +50,15 @@ def preprocessing(signal, f_ech):
     # HP and Wiener filter
     filterb = sg.butter(8, 2500, "highpass", fs = f_sub, output='sos')
     signal_filtered = sg.sosfilt(filterb, signal_denoised)
-    signal_preprocessed = sg.wiener(signal_filtered)
+    signal_filtered2 = sg.wiener(signal_filtered)
     
-    return signal_preprocessed, f_sub
+    # Replace 0. values with the min of non_zero values
+    masked_a = np.ma.masked_equal(signal_filtered2, 0.0, copy=False)
+    sig_min = np.min(np.abs(masked_a))
+    signal_final = signal_filtered2.copy()
+    signal_final[signal_final == 0.] = sig_min
+    
+    return signal_final, f_sub
 
 
 
